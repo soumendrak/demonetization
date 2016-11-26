@@ -6,6 +6,7 @@ import math
 # AFINN-111 is as of June 2011 the most recent version of AFINN
 # filenameAFINN = 'AFINN/AFINN-111.txt'
 afinn = {}
+total = 0
 with open('AFINN/sentiments.txt') as SentimentFile:
     for row in SentimentFile:
         afinn[row.split('\t')[0]] = int(row.split('\t')[1].strip())
@@ -53,9 +54,6 @@ def tokenize(s):
 
 
 def preprocess(s, lowercase=False):
-	"""
-	prepares the tokens.
-	"""
     tokens = tokenize(s)
     if lowercase:
         tokens = [token if emoticon_re.search(
@@ -63,18 +61,19 @@ def preprocess(s, lowercase=False):
     return tokens
 
 
-def filereader():
+def filereader(total=0):
     """
     This has been used to read the csv file
     :return read handler
     """
-    with open('demonetization-tweets-Train.csv') as csvfile:
+    with open('demonetization-tweets-Test.csv') as csvfile:
         reader = csv.DictReader(csvfile)
         for row in reader:
             try:
                 # tweet = row['text'].decode('utf-8').encode('utf-8')
                 tweet = row['text']
-                print sentiment(preprocess(tweet))
+                total += sentiment(preprocess(tweet))
+                print total
             except UnicodeDecodeError:
                 # There are some characters which can not be handled by Python
                 # We need to ignore those characters
