@@ -1,3 +1,15 @@
+"""
+Created by Soumendra Kumar Sahoo
+Date: 26th November 2016
+Function: This program will calculate the overall sentiment of public
+          on the demonetization issue by fetching data from twitter
+Future plans:
+    1. Data extraction from twitter functionality will be added
+    2. Visualization of the sentiments using seaborn/matplotlib module
+    3. Performance improvement
+    4. Converting it to Unsupervised learning
+"""
+
 import csv
 import re
 from nltk.tokenize import word_tokenize
@@ -6,7 +18,6 @@ import math
 # AFINN-111 is as of June 2011 the most recent version of AFINN
 # filenameAFINN = 'AFINN/AFINN-111.txt'
 afinn = {}
-total = 0
 with open('AFINN/sentiments.txt') as SentimentFile:
     for row in SentimentFile:
         afinn[row.split('\t')[0]] = int(row.split('\t')[1].strip())
@@ -42,10 +53,10 @@ def sentiment(words):
     if sentiments:
         # How should you weight the individual word sentiments?
         # You could do N, sqrt(N) or 1 for example. Here I use sqrt(N)
-        sentiment = float(sum(sentiments)) / math.sqrt(len(sentiments))
+        sntmnt = float(sum(sentiments)) / math.sqrt(len(sentiments))
     else:
-        sentiment = 0
-    return sentiment
+        sntmnt = 0
+    return sntmnt
 
 
 def tokenize(s):
@@ -70,14 +81,13 @@ def filereader(total=0):
         reader = csv.DictReader(csvfile)
         for row in reader:
             try:
-                # tweet = row['text'].decode('utf-8').encode('utf-8')
                 tweet = row['text']
                 total += sentiment(preprocess(tweet))
-                print total
             except UnicodeDecodeError:
                 # There are some characters which can not be handled by Python
                 # We need to ignore those characters
                 pass
+        return total
 
 
 def main():
@@ -85,7 +95,11 @@ def main():
     main paragraph to handle the processes
     :return:
     """
-    filereader()
+    Total = filereader()
+    if Total > 0:
+        print "Positive sentiments"
+    else:
+        print "Negative sentiments"
 
 
 if __name__ == "__main__":
